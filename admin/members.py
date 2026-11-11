@@ -84,7 +84,7 @@ def cmd_revoke(login: str) -> None:
     db = init()
     auth.delete_user(login)
     db.collection("members").document(login).delete()
-    print(f"Доступ {login} отозван (домашки этого человека остаются).")
+    print(f"Доступ {login} отозван (домашние задания этого человека остаются).")
 
 
 def main() -> None:

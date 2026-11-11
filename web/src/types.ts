@@ -48,7 +48,7 @@ export interface HomeworkPatch {
 
 export type AuthStatus = "loading" | "signedOut" | "signedIn";
 
-/** Всё, что приложению нужно от хранилища домашек и входа. Реализации: Firebase и демо. */
+/** Всё, что приложению нужно от хранилища домашних заданий и входа. Реализации: Firebase и демо. */
 export interface Backend {
   status: AuthStatus;
   user: Member | null;

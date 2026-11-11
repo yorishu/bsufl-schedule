@@ -4,7 +4,7 @@ interface Props {
   initialText?: string;
   initialDue: string;
   submitLabel: string;
-  /** Если задан, показывается выбор предмета (форма в разделе «Все домашки»). */
+  /** Если задан, показывается выбор предмета (форма в разделе «Все домашние задания»). */
   subjects?: string[];
   initialSubject?: string;
   onSubmit: (value: { text: string; due_date: string; subject: string }) => Promise<void>;

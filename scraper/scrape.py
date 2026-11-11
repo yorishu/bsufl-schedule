@@ -170,7 +170,7 @@ def teacher_name(rule: dict[str, Any]) -> str:
 
 
 def make_id(day: date, start: str, subject: str, lesson_type: str, teacher: str) -> str:
-    """Стабильный id. Аудитория не входит: она меняется, а домашка должна остаться."""
+    """Стабильный id. Аудитория не входит: она меняется, а домашнее задание должно остаться."""
     raw = "|".join((day.isoformat(), start, subject, lesson_type, teacher)).lower()
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:12]
 

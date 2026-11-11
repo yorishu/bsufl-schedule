@@ -85,7 +85,7 @@ export function LessonCard({ lesson, homework, isNow, parallel }: Props) {
             className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-line text-sm font-medium text-muted transition-colors hover:border-primary hover:text-primary-text"
           >
             <Icon name="plus" className="size-4" />
-            Домашка
+            Домашнее задание
           </button>
         )}
       </div>

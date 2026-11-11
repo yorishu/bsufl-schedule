@@ -42,7 +42,7 @@ export function groupBySlot(dayLessons: Lesson[]): Lesson[][] {
   return slots;
 }
 
-/** Дата следующей пары того же предмета: по умолчанию именно к ней задают домашку. */
+/** Дата следующей пары того же предмета: по умолчанию именно к ней задают домашнее задание. */
 export function buildDefaultDue(lessons: Lesson[]): (lesson: Lesson) => string {
   const bySubject = new Map<string, string[]>();
   for (const l of lessons) {

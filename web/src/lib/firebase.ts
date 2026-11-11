@@ -36,7 +36,7 @@ export function getFirebase(): Firebase {
   instance = {
     app,
     auth: getAuth(app),
-    // Офлайн-кэш в IndexedDB: домашки открываются без сети и синхронизируются при появлении связи.
+    // Офлайн-кэш в IndexedDB: домашние задания открываются без сети и синхронизируются при появлении связи.
     db: initializeFirestore(
       app,
       { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) },

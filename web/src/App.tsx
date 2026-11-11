@@ -131,7 +131,7 @@ export default function App() {
                 aria-current={tab === "homework" ? "page" : undefined}
               >
                 <Icon name="book" className="size-4" />
-                Все домашки
+                Все домашние задания
               </a>
             </nav>
             <div className="ml-auto flex items-center gap-1">
@@ -245,7 +245,7 @@ export default function App() {
               }`}
             >
               <Icon name="book" />
-              Все домашки
+              Все домашние задания
             </a>
           </div>
         </nav>

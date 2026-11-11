@@ -83,7 +83,7 @@ export function HomeworkItem({ hw, showSubject = false }: { hw: Homework; showSu
               <button
                 type="button"
                 onClick={() => setEditing(true)}
-                aria-label="Редактировать домашку"
+                aria-label="Редактировать домашнее задание"
                 className="grid size-11 place-items-center rounded-lg hover:bg-surface"
               >
                 <Icon name="pencil" className="size-4" />
@@ -92,7 +92,7 @@ export function HomeworkItem({ hw, showSubject = false }: { hw: Homework; showSu
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(true)}
-                  aria-label="Удалить домашку"
+                  aria-label="Удалить домашнее задание"
                   className="grid size-11 place-items-center rounded-lg hover:bg-danger/15 hover:text-danger-text"
                 >
                   <Icon name="trash" className="size-4" />

@@ -3,11 +3,11 @@ import type { Backend, Lesson } from "../types";
 
 export interface AppContextValue {
   backend: Backend;
-  /** Все предметы из расписания и из домашек, по алфавиту. */
+  /** Все предметы из расписания и из домашних заданий, по алфавиту. */
   subjects: string[];
   /** Сегодняшняя дата, YYYY-MM-DD (обновляется вместе с часами). */
   todayISO: string;
-  /** Предлагаемый срок сдачи для домашки, заданной на этой паре. */
+  /** Предлагаемый срок сдачи для домашнего задания, заданного на этой паре. */
   defaultDue: (lesson: Lesson) => string;
 }
 

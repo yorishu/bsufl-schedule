@@ -110,7 +110,7 @@ export function AllHomework({ homework }: { homework: Homework[] }) {
 
       <div className="mt-4 space-y-3">
         {!backend.homeworkReady ? (
-          <p className="py-10 text-center text-muted">Загружаю домашки…</p>
+          <p className="py-10 text-center text-muted">Загружаю домашние задания…</p>
         ) : list.length === 0 ? (
           <p className="py-10 text-center text-muted">Здесь пока пусто</p>
         ) : (
