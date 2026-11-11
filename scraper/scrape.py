@@ -32,6 +32,7 @@ DEFAULT_GROUP_NAME = "307/2"
 DEFAULT_GROUP_ID = 224003619
 
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "public" / "schedule.json"
+STATUS_FILE_NAME = "status.json"  # лежит рядом с расписанием
 
 # Окно запроса по умолчанию: от понедельника две недели назад и на 150 дней вперёд.
 DAYS_BACK = 14
@@ -224,6 +225,23 @@ def save(path: Path, payload: dict[str, Any]) -> None:
     os.replace(tmp, path)  # атомарно: старый файл не повреждается при сбое
 
 
+def write_status(path: Path, ok: bool, error: str | None) -> None:
+    """Пишет public/status.json: фронтенд по нему показывает предупреждения (сайт университета
+    недоступен, расписание давно не обновлялось). Пишется при каждом запуске, в том числе при сбое."""
+    previous = load_existing(path) or {}
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    payload = {
+        "ok": ok,
+        "checked_at": now,
+        "last_success": now if ok else previous.get("last_success"),
+        "error": None if ok else (error or "неизвестная ошибка")[:300],
+    }
+    try:
+        save(path, payload)
+    except OSError as exc:  # статус вторичен: не роняем парсер из-за него
+        print(f"Не удалось записать {path.name}: {exc}", file=sys.stderr)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Парсер расписания БГУИЯ")
     parser.add_argument("--group-name", default=DEFAULT_GROUP_NAME)
@@ -237,16 +255,22 @@ def main() -> int:
     start: date = args.start or (today - timedelta(days=today.weekday() + DAYS_BACK))
     end: date = args.end or (today + timedelta(days=DAYS_FORWARD))
 
+    status_path = args.output.parent / STATUS_FILE_NAME
+
     try:
         rules = fetch_rules(args.group_id, start, end)
         validate_rules(rules)
         lessons = expand_rules(rules, start, end)
         if not lessons:
             raise ScrapeError("После разворачивания правил не осталось ни одной пары.")
-    except ScrapeError as exc:
-        print(f"ОШИБКА: {exc}", file=sys.stderr)
+    except Exception as exc:  # любая причина сбоя: расписание не трогаем, но сообщаем о проблеме сайту
+        message = str(exc) if isinstance(exc, ScrapeError) else f"{type(exc).__name__}: {exc}"
+        print(f"ОШИБКА: {message}", file=sys.stderr)
         print("Старый schedule.json не изменён.", file=sys.stderr)
+        write_status(status_path, ok=False, error=message)
         return 1
+
+    write_status(status_path, ok=True, error=None)
 
     existing = load_existing(args.output)
     if existing and existing.get("group") == args.group_name and existing.get("lessons") == lessons:

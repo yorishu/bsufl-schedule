@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: "0 4 * * *" # раз в сутки, 04:00 UTC (07:00 по Минску)
   workflow_dispatch: # ручной запуск
+    inputs:
+      group_id:
+        description: "ID группы. Оставьте пустым; неверное значение нужно только для проверки сценария сбоя"
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -28,17 +33,38 @@ jobs:
       - name: Установка зависимостей
         run: pip install -r scraper/requirements.txt
 
+      # При сбое парсер не трогает schedule.json, но пишет public/status.json с ошибкой.
+      # continue-on-error: статус нужно закоммитить в любом случае, чтобы сайт показал предупреждение.
       - name: Запуск парсера
-        run: python scraper/scrape.py
+        id: scrape
+        continue-on-error: true
+        env:
+          GROUP_ID: ${{ inputs.group_id }}
+        run: python scraper/scrape.py ${GROUP_ID:+--group-id "$GROUP_ID"}
 
-      - name: Коммит, если расписание изменилось
+      # status.json меняется при каждом запуске (время проверки): ежедневный коммит заодно
+      # не даёт GitHub отключить cron в репозитории без активности (через 60 дней).
+      - name: Коммит расписания и статуса
         run: |
+          git config user.name "schedule-bot"
+          git config user.email "schedule-bot@users.noreply.github.com"
           if [ -n "$(git status --porcelain public/schedule.json)" ]; then
-            git config user.name "schedule-bot"
-            git config user.email "schedule-bot@users.noreply.github.com"
-            git add public/schedule.json
-            git commit -m "Обновление расписания"
-            git push
+            MSG="Обновление расписания"
           else
-            echo "Расписание не изменилось."
+            MSG="Статус парсера"
           fi
+          git add public/schedule.json public/status.json
+          if git diff --cached --quiet; then
+            echo "Изменений нет."
+          else
+            git commit -m "$MSG"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push
+          fi
+
+      # Если парсер упал, помечаем запуск как неудачный (GitHub пришлёт письмо владельцу репозитория).
+      - name: Итог
+        if: steps.scrape.outcome == 'failure'
+        run: |
+          echo "::error::Парсер не смог обновить расписание, на сайте показано предупреждение."
+          exit 1

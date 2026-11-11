@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
   # Коммиты от scrape.yml сделаны через GITHUB_TOKEN и сами по себе деплой не запускают,
-  # поэтому после каждого успешного обновления расписания запускаем деплой явно.
+  # поэтому после каждого запуска парсера запускаем деплой явно. Деплой нужен и после сбоя
+  # парсера: так на сайт попадает public/status.json с предупреждением.
   workflow_run:
     workflows: ["Обновление расписания"]
     types: [completed]
@@ -21,7 +22,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

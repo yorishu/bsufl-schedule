@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { Homework, Lesson } from "../types";
 import { addDays, formatDay, timeToMinutes, toISO, WEEKDAYS_FULL } from "../lib/dates";
 import { groupBySlot } from "../lib/schedule";
@@ -12,9 +12,13 @@ interface Props {
   nowMinutes: number;
   /** Диапазон дат, за который в расписании есть данные. */
   range: { min: string; max: string } | null;
+  /** Статус сайта уже загружен: до этого не знаем, есть ли предупреждения, и не прокручиваем страницу. */
+  ready: boolean;
+  /** Есть предупреждения вверху страницы: при открытии не уводим пользователя мимо них. */
+  hasBanners: boolean;
 }
 
-export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinutes, range }: Props) {
+export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinutes, range, ready, hasBanners }: Props) {
   const days = useMemo(() => {
     const all = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
     // Воскресенье показываем, только если в нём есть пары.
@@ -37,10 +41,17 @@ export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinu
   const hasToday = days.some((d) => toISO(d) === todayISO);
 
   // На телефоне при открытии текущей недели прокручиваем к сегодняшнему дню.
+  // При первом открытии с предупреждениями (сайт университета недоступен и т.п.) не прокручиваем,
+  // иначе они окажутся выше экрана и пользователь их не увидит.
+  // Решение принимается один раз на неделю (так повторный запуск эффекта, например в StrictMode, ничего не меняет).
+  const handledWeek = useRef<string | null>(null);
   useEffect(() => {
-    if (!hasToday) return;
+    if (!ready || handledWeek.current === weekISO) return;
+    const initial = handledWeek.current === null;
+    handledWeek.current = weekISO;
+    if (!hasToday || (initial && hasBanners)) return;
     document.getElementById(`day-${todayISO}`)?.scrollIntoView({ block: "start" });
-  }, [weekISO, hasToday, todayISO]);
+  }, [weekISO, hasToday, todayISO, ready]);
 
   const outOfRange = range !== null && (toISO(addDays(weekStart, 6)) < range.min || weekISO > range.max);
 

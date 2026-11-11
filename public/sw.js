@@ -1,8 +1,9 @@
 // Service worker: офлайн-режим и установка на главный экран.
-// Расписание и страница: сначала сеть, при её отсутствии кэш (чтобы видеть свежее расписание).
+// Страница и все .json (расписание, status.json, notice.json): сначала сеть, при её отсутствии кэш,
+// чтобы видеть свежее расписание и актуальные предупреждения.
 // Остальные файлы своего сайта (хешированные скрипты, стили, иконки): сначала кэш, обновление в фоне.
 // Запросы к Firebase идут на другие домены и сюда не попадают: офлайн-кэш домашних заданий делает сам Firestore.
-const CACHE = "schedule-v1";
+const CACHE = "schedule-v2";
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -45,6 +46,6 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  const fresh = request.mode === "navigate" || url.pathname.endsWith("/schedule.json");
+  const fresh = request.mode === "navigate" || url.pathname.endsWith(".json");
   event.respondWith(fresh ? networkFirst(request) : staleWhileRevalidate(request));
 });

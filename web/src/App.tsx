@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { ScheduleData } from "./types";
 import { AppContext, type AppContextValue } from "./lib/app-context";
 import { addDays, formatWeekRange, startOfWeek, toISO } from "./lib/dates";
@@ -6,7 +6,9 @@ import { DEMO_MODE, firebaseConfigured } from "./lib/firebase";
 import { useDemoBackend } from "./lib/demoBackend";
 import { useFirebaseBackend } from "./lib/firebaseBackend";
 import { buildDefaultDue, dateRange, groupByDate, loadSchedule } from "./lib/schedule";
+import { useOnline, useSiteNotices } from "./lib/status";
 import { AllHomework } from "./components/AllHomework";
+import { Banners, buildBanners } from "./components/Banners";
 import { Icon } from "./components/Icon";
 import { Login } from "./components/Login";
 import { WeekView } from "./components/WeekView";
@@ -68,10 +70,25 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  const online = useOnline();
+  const signedIn = backend.status === "signedIn";
+  const { status: scraperStatus, notice, loaded: noticesLoaded } = useSiteNotices(signedIn);
+
+  const reloadSchedule = useCallback(() => {
+    setScheduleError(null);
+    loadSchedule().then(setSchedule, (e: Error) =>
+      setScheduleError(e instanceof TypeError ? "Не удалось связаться с сервером." : e.message),
+    );
+  }, []);
+
   useEffect(() => {
-    if (backend.status !== "signedIn") return;
-    loadSchedule().then(setSchedule, (e: Error) => setScheduleError(e.message));
-  }, [backend.status]);
+    if (signedIn) reloadSchedule();
+  }, [signedIn, reloadSchedule]);
+
+  // Сеть вернулась, а расписание не загрузилось: пробуем ещё раз без участия пользователя.
+  useEffect(() => {
+    if (online && scheduleError && signedIn) reloadSchedule();
+  }, [online]);
 
   const lessons = schedule?.lessons;
   const lessonsByDate = useMemo(() => groupByDate(lessons ?? []), [lessons]);
@@ -102,6 +119,17 @@ export default function App() {
   }
   if (backend.status === "loading") return <Message>Загрузка…</Message>;
   if (backend.status === "signedOut") return <Login backend={backend} />;
+
+  const banners = buildBanners({
+    online,
+    scheduleError,
+    onRetrySchedule: reloadSchedule,
+    dataError: backend.error,
+    status: scraperStatus,
+    scheduleUpdatedAt: schedule?.updated_at ?? null,
+    notice,
+    now,
+  });
 
   const isCurrentWeek = toISO(weekStart) === toISO(startOfWeek(now));
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -189,16 +217,7 @@ export default function App() {
         </header>
 
         <main className="mx-auto max-w-7xl 2xl:max-w-[1800px] px-4 pb-28 pt-4 md:pb-10">
-          {backend.error && (
-            <p role="alert" className="mb-4 rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger-text">
-              {backend.error}
-            </p>
-          )}
-          {scheduleError && (
-            <p role="alert" className="mb-4 rounded-xl border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger-text">
-              {scheduleError}
-            </p>
-          )}
+          <Banners banners={banners} />
           {tab === "week" ? (
             schedule ? (
               <>
@@ -209,9 +228,13 @@ export default function App() {
                   todayISO={todayISO}
                   nowMinutes={nowMinutes}
                   range={range}
+                  ready={noticesLoaded}
+                  hasBanners={banners.length > 0}
                 />
                 <p className="mt-8 text-center text-xs text-muted">
-                  Расписание обновлено: {new Date(schedule.updated_at).toLocaleString("ru-RU")}
+                  {scraperStatus?.ok
+                    ? `Расписание сверено с сайтом университета: ${new Date(scraperStatus.checked_at).toLocaleString("ru-RU")}`
+                    : `Расписание обновлено: ${new Date(schedule.updated_at).toLocaleString("ru-RU")}`}
                 </p>
               </>
             ) : (
