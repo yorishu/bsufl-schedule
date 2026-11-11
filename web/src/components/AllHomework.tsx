@@ -68,6 +68,7 @@ export function AllHomework({ homework }: { homework: Homework[] }) {
             ))}
           </select>
         </label>
+        {backend.status !== "guest" && (
         <button
           type="button"
           onClick={() => setAdding((v) => !v)}
@@ -76,6 +77,7 @@ export function AllHomework({ homework }: { homework: Homework[] }) {
           <Icon name="plus" className="size-4" />
           Добавить
         </button>
+        )}
       </div>
 
       {adding && (

@@ -21,6 +21,7 @@ interface Props {
 
 export function LessonCard({ lesson, homework, isNow, parallel }: Props) {
   const { backend } = useApp();
+  const readOnly = backend.status === "guest";
   const [adding, setAdding] = useState(false);
 
   return (
@@ -78,7 +79,7 @@ export function LessonCard({ lesson, homework, isNow, parallel }: Props) {
               setAdding(false);
             }}
           />
-        ) : (
+        ) : readOnly ? null : (
           <button
             type="button"
             onClick={() => setAdding(true)}

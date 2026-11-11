@@ -18,6 +18,7 @@ export function HomeworkItem({ hw, showSubject = false }: { hw: Homework; showSu
   const [error, setError] = useState<string | null>(null);
 
   const due = describeDue(hw.due_date, todayISO);
+  const readOnly = backend.status === "guest";
   const isAuthor = backend.user?.id === hw.author_id;
   const edited = hw.updated_at !== null && hw.created_at !== null && hw.updated_at - hw.created_at > 60_000;
 
@@ -60,6 +61,7 @@ export function HomeworkItem({ hw, showSubject = false }: { hw: Homework; showSu
           {hw.created_at !== null && <span>· {formatDateTime(hw.created_at)}</span>}
           {edited && hw.updated_at !== null && <span>· изм. {formatDateTime(hw.updated_at)}</span>}
         </span>
+        {!readOnly && (
         <span className="ml-auto flex gap-1">
           {confirmDelete ? (
             <>
@@ -101,6 +103,7 @@ export function HomeworkItem({ hw, showSubject = false }: { hw: Homework; showSu
             </>
           )}
         </span>
+        )}
       </div>
       {error && (
         <p role="alert" className="mt-1 text-sm text-danger-text">

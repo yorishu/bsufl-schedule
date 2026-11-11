@@ -71,7 +71,9 @@ export default function App() {
   }, []);
 
   const online = useOnline();
-  const signedIn = backend.status === "signedIn";
+  // Гость тоже видит расписание и домашние задания, но не может их менять.
+  const signedIn = backend.status === "signedIn" || backend.status === "guest";
+  const isGuest = backend.status === "guest";
   const { status: scraperStatus, notice, loaded: noticesLoaded } = useSiteNotices(signedIn);
 
   const reloadSchedule = useCallback(() => {
@@ -171,15 +173,25 @@ export default function App() {
               >
                 <Icon name={theme === "dark" ? "sun" : "moon"} />
               </button>
-              <button
-                type="button"
-                onClick={() => void backend.signOut()}
-                aria-label={`Выйти (${backend.user?.name ?? ""})`}
-                className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm text-muted hover:bg-surface-2"
-              >
-                <span className="hidden max-w-32 truncate sm:inline">{backend.user?.name}</span>
-                <Icon name="logout" className="size-4" />
-              </button>
+              {isGuest ? (
+                <button
+                  type="button"
+                  onClick={backend.leaveGuest}
+                  className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-medium text-primary-text hover:bg-surface-2"
+                >
+                  Войти
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => void backend.signOut()}
+                  aria-label={`Выйти (${backend.user?.name ?? ""})`}
+                  className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm text-muted hover:bg-surface-2"
+                >
+                  <span className="hidden max-w-32 truncate sm:inline">{backend.user?.name}</span>
+                  <Icon name="logout" className="size-4" />
+                </button>
+              )}
             </div>
           </div>
 

@@ -71,6 +71,14 @@ export function Login({ backend }: { backend: Backend }) {
         >
           {busy ? "Вхожу…" : "Войти"}
         </button>
+        <button
+          type="button"
+          onClick={backend.enterGuest}
+          disabled={busy}
+          className="mt-2 min-h-12 w-full rounded-xl border border-line bg-surface-2 font-semibold text-muted transition-colors hover:text-fg disabled:opacity-60"
+        >
+          Смотреть без кода
+        </button>
       </form>
     </main>
   );

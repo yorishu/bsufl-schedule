@@ -76,7 +76,7 @@ export function useDemoBackend(): Backend {
 
   return useMemo(
     () => ({
-      status: "signedIn" as const,
+      status: (new URLSearchParams(location.search).has("guest") ? "guest" : "signedIn") as "guest" | "signedIn",
       user: ME,
       members: MEMBERS,
       homework,
@@ -84,6 +84,8 @@ export function useDemoBackend(): Backend {
       error: null,
       signIn: async () => {},
       signOut: async () => {},
+      enterGuest: () => {},
+      leaveGuest: () => {},
       addHomework,
       updateHomework,
       removeHomework,

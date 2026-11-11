@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // Правила доступа Firestore.
-// Доступ только у участников группы: у каждого есть документ members/{uid}.
+// Читать может любой (гостевой просмотр), писать только участники группы: у каждого есть документ members/{uid}.
 // Документы members создаёт и удаляет только администратор через скрипт
 // admin/members.py (Admin SDK обходит эти правила).
 service cloud.firestore {
@@ -12,15 +12,17 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/members/$(request.auth.uid));
     }
 
-    // Список одногруппников: видят все участники, менять с клиента нельзя.
+    // Список одногруппников: читать может любой (гостевой просмотр показывает подписи авторов),
+    // менять с клиента нельзя.
     match /members/{uid} {
-      allow read: if isMember();
+      allow read: if true;
       allow write: if false;
     }
 
     // Домашние задания.
+    // Читать может любой (гостевой режим), писать только участники.
     match /homework/{id} {
-      allow read: if isMember();
+      allow read: if true;
 
       // Создать может участник, автором должен быть он сам, время ставит сервер.
       allow create: if isMember()

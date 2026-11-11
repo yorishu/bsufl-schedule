@@ -40,7 +40,8 @@ function authMessage(error: unknown): string {
 }
 
 export function useFirebaseBackend(): Backend {
-  const [status, setStatus] = useState<AuthStatus>(firebaseConfigured ? "loading" : "signedOut");
+  const [authStatus, setAuthStatus] = useState<AuthStatus>(firebaseConfigured ? "loading" : "signedOut");
+  const [guest, setGuest] = useState(false);
   const [uid, setUid] = useState<string | null>(null);
   const [members, setMembers] = useState<Record<string, Member>>({});
   const [homework, setHomework] = useState<Homework[]>([]);
@@ -51,12 +52,15 @@ export function useFirebaseBackend(): Backend {
     if (!firebaseConfigured) return;
     return onAuthStateChanged(getFirebase().auth, (u) => {
       setUid(u ? u.uid : null);
-      setStatus(u ? "signedIn" : "signedOut");
+      setAuthStatus(u ? "signedIn" : "signedOut");
     });
   }, []);
 
+  // Гость: не вошёл, но выбрал просмотр. После входа гостевой режим не нужен.
+  const status: AuthStatus = authStatus === "signedOut" && guest ? "guest" : authStatus;
+
   useEffect(() => {
-    if (status !== "signedIn") {
+    if (status !== "signedIn" && status !== "guest") {
       setMembers({});
       setHomework([]);
       setHomeworkReady(false);
@@ -87,6 +91,9 @@ export function useFirebaseBackend(): Backend {
       offHomework();
     };
   }, [status]);
+
+  const enterGuest = useCallback(() => setGuest(true), []);
+  const leaveGuest = useCallback(() => setGuest(false), []);
 
   const signIn = useCallback(async (id: string, key: string) => {
     try {
@@ -142,6 +149,8 @@ export function useFirebaseBackend(): Backend {
     error,
     signIn,
     signOut,
+    enterGuest,
+    leaveGuest,
     addHomework,
     updateHomework,
     removeHomework,

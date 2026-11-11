@@ -46,7 +46,8 @@ export interface HomeworkPatch {
   due_date: string;
 }
 
-export type AuthStatus = "loading" | "signedOut" | "signedIn";
+/** guest: просмотр без входа (запись недоступна). */
+export type AuthStatus = "loading" | "signedOut" | "signedIn" | "guest";
 
 /** Всё, что приложению нужно от хранилища домашних заданий и входа. Реализации: Firebase и демо. */
 export interface Backend {
@@ -59,6 +60,10 @@ export interface Backend {
   error: string | null;
   signIn(id: string, key: string): Promise<void>;
   signOut(): Promise<void>;
+  /** Открыть сайт только для просмотра, без входа. */
+  enterGuest(): void;
+  /** Вернуться на экран входа из гостевого режима. */
+  leaveGuest(): void;
   addHomework(data: NewHomework): Promise<void>;
   updateHomework(id: string, patch: HomeworkPatch): Promise<void>;
   removeHomework(id: string): Promise<void>;
