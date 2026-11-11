@@ -1,0 +1,110 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* Семантические токены. Компоненты используют только их, а не сырые цвета. */
+@theme inline {
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-text: var(--primary-text);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-ok: var(--ok);
+  --color-ok-text: var(--ok-text);
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+}
+
+/* Тёмная тема (по умолчанию) */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f172a;
+  --surface: #192134;
+  --surface-2: #222c42;
+  --line: rgba(255, 255, 255, 0.1);
+  --fg: #f8fafc;
+  --muted: #a3b1c6;
+  --primary: #d97706;
+  --on-primary: #000000;
+  --primary-text: #fbbf24;
+  --accent: #6366f1;
+  --accent-text: #a5b4fc;
+  --ok: #10b981;
+  --ok-text: #6ee7b7;
+  --danger: #ef4444;
+  --danger-text: #fca5a5;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --line: #e2e8f0;
+  --fg: #0f172a;
+  --muted: #475569;
+  --primary: #b45309;
+  --on-primary: #ffffff;
+  --primary-text: #92400e;
+  --accent: #4f46e5;
+  --accent-text: #4338ca;
+  --ok: #059669;
+  --ok-text: #047857;
+  --danger: #dc2626;
+  --danger-text: #b91c1c;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Видимый фокус для клавиатуры */
+:focus-visible {
+  outline: 2px solid var(--primary-text);
+  outline-offset: 2px;
+}
+
+/* 16px в полях ввода, иначе iOS приближает страницу при фокусе */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+button,
+[role="tab"],
+select {
+  cursor: pointer;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

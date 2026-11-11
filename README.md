@@ -1,0 +1,67 @@
+# Расписание и домашки группы 307/2 (БГУИЯ)
+
+Веб-приложение для одной группы: расписание на неделю и домашние задания напротив каждой пары.
+Работает с телефона, ставится на главный экран (PWA), есть тёмная и светлая тема.
+
+## Как это устроено
+
+| Часть | Что делает |
+|---|---|
+| `scraper/` | Python-парсер. Раз в сутки (GitHub Actions) забирает расписание с `timetable.bsufl.by` и сохраняет `public/schedule.json`. |
+| `web/` | Фронтенд: Vite + React + TypeScript + Tailwind. |
+| Firebase | Firestore (домашки, участники) и Auth (вход по ID и ключу). |
+| `admin/` | Локальный скрипт выдачи и отзыва ключей одногруппникам. |
+| GitHub Pages | Хостинг статики. |
+
+Источник данных описан в [`docs/source.md`](docs/source.md). Сайт расписания открывается только по `http://`.
+
+## Запуск фронтенда локально
+
+```bash
+cd web
+npm install
+cp .env.example .env.local   # впишите конфиг Firebase (Project settings → Your apps → Config)
+npm run dev
+```
+
+Без Firebase можно посмотреть интерфейс в демо-режиме: `VITE_DEMO=1 npm run dev` (данные в памяти, вход не нужен).
+
+## Парсер
+
+```bash
+pip install -r scraper/requirements.txt
+python scraper/scrape.py
+```
+
+Если сайт недоступен или формат ответа изменился, скрипт падает с понятной ошибкой и **не трогает** старый `public/schedule.json`.
+
+## Выдача ключей одногруппникам
+
+Нужен файл сервисного аккаунта Firebase: `admin/serviceAccount.local.json`
+(Project settings → Service accounts → Generate new private key). **Никому не отправлять и не коммитить.**
+
+```bash
+pip install -r admin/requirements.txt
+python admin/members.py add "Иванов Иван"   # выдаст ID (u02, u03, …) и ключ, передать человеку лично
+python admin/members.py list
+python admin/members.py revoke u03          # отключить доступ
+```
+
+## Правила Firestore
+
+Лежат в `firestore.rules`. Публикация:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+## Деплой
+
+`.github/workflows/deploy.yml` собирает `web/` и публикует на GitHub Pages при пуше в `main` и после каждого
+обновления расписания. Для сборки в **Settings → Secrets and variables → Actions** нужны секреты:
+`VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`.
+В **Settings → Pages** источник: **GitHub Actions**.
+
+## Секреты, которые нельзя коммитить
+
+`admin/serviceAccount.local.json`, `admin/keys.local.csv`, `web/.env.local` (все в `.gitignore`).

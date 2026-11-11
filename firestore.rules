@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// Правила доступа Firestore.
+// Доступ только у участников группы: у каждого есть документ members/{uid}.
+// Документы members создаёт и удаляет только администратор через скрипт
+// admin/members.py (Admin SDK обходит эти правила).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isMember() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/members/$(request.auth.uid));
+    }
+
+    // Список одногруппников: видят все участники, менять с клиента нельзя.
+    match /members/{uid} {
+      allow read: if isMember();
+      allow write: if false;
+    }
+
+    // Домашки.
+    match /homework/{id} {
+      allow read: if isMember();
+
+      // Создать может участник, автором должен быть он сам, время ставит сервер.
+      allow create: if isMember()
+        && request.resource.data.keys().hasOnly(
+             ['subject', 'lesson_id', 'due_date', 'text', 'author_id', 'created_at', 'updated_at'])
+        && request.resource.data.author_id == request.auth.uid
+        && request.resource.data.subject is string
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.due_date is string
+        && request.resource.data.created_at == request.time
+        && request.resource.data.updated_at == request.time;
+
+      // Редактировать может любой участник (общая группа), но автора и дату создания менять нельзя.
+      allow update: if isMember()
+        && request.resource.data.author_id == resource.data.author_id
+        && request.resource.data.created_at == resource.data.created_at
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.updated_at == request.time;
+
+      // Удалять может только автор.
+      allow delete: if isMember() && resource.data.author_id == request.auth.uid;
+    }
+
+    // Всё остальное закрыто.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
