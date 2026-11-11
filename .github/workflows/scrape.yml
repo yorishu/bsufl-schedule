@@ -1,3 +1,4 @@
+# Ежедневное обновление public/schedule.json с timetable.bsufl.by (запускается и вручную).
 name: Обновление расписания
 
 on:
