@@ -66,6 +66,16 @@ python admin/members.py rename u03 "Имя"    # исправить имя
 python admin/members.py revoke u03          # отключить доступ (ID не переиспользуется)
 ```
 
+## Резервные копии
+
+```bash
+python admin/backup.py              # копия домашних заданий и участников в admin/backups/
+python admin/backup.py --keep 30    # и оставить только 30 последних копий
+```
+
+Создаются два файла: `backup-ДАТА.json` (полная копия, id документов сохранены) и `homework-ДАТА.csv` (читаемая
+таблица, открывается в Excel). Папка `admin/backups/` в `.gitignore`. Ключи доступа в копию не входят.
+
 ## Правила Firestore
 
 Лежат в `firestore.rules`. Публикация:

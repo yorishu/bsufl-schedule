@@ -2,6 +2,7 @@
 admin/serviceAccount.local.json
 admin/keys.local.csv
 users.md
+admin/backups/
 *.local.json
 *.local.csv
 .env

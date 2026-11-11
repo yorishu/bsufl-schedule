@@ -145,9 +145,10 @@ README.md
 
 - Парсер: GitHub Actions, cron 04:00 UTC и ручной запуск (поле `group_id` только для проверки сбоя). Локально: `python scraper/scrape.py`.
 - Фронтенд локально: `cd web && npm run dev` (боевой Firebase через `web/.env.local`) или `VITE_DEMO=1 npm run dev`. Сборка: `npm run build`.
+- Резервная копия данных: `python admin/backup.py [--keep N] [--out ПАПКА]` → `admin/backups/backup-*.json` (полная, пригодна для восстановления) и `homework-*.csv` (читаемая). Папка в `.gitignore`; ключи в копию не входят. Автозапуска нет, запускает владелец (при желании через Планировщик заданий Windows). Скрипта восстановления пока нет.
 - Правила Firestore: `firebase deploy --only firestore:rules` (в `firebase.json` указано `"database": "default"`).
 - Секреты Actions: `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID` (значения из `web/.env.local`, не из чата).
-- Локальные секретные файлы (все в `.gitignore`): `admin/serviceAccount.local.json`, `admin/keys.local.csv`, `web/.env.local`, `users.md`.
+- Локальные секретные файлы (все в `.gitignore`): `admin/serviceAccount.local.json`, `admin/keys.local.csv`, `web/.env.local`, `users.md`, `admin/backups/`.
 
 ## Подводные камни
 
