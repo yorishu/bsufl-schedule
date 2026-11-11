@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function LessonCard({ lesson, homework, isNow, parallel }: Props) {
-  const { backend, defaultDue } = useApp();
+  const { backend } = useApp();
   const [adding, setAdding] = useState(false);
 
   return (
@@ -70,7 +70,7 @@ export function LessonCard({ lesson, homework, isNow, parallel }: Props) {
         ))}
         {adding ? (
           <HomeworkForm
-            initialDue={defaultDue(lesson)}
+            initialDue={lesson.date}
             submitLabel="Добавить"
             onCancel={() => setAdding(false)}
             onSubmit={async ({ text, due_date }) => {

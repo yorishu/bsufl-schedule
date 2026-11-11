@@ -62,7 +62,7 @@ export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinu
           Расписание на эту неделю ещё не опубликовано на сайте университета.
         </p>
       )}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-x-4 gap-y-10 md:gap-y-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {days.map((day) => {
           const iso = toISO(day);
           const isToday = iso === todayISO;
@@ -76,7 +76,7 @@ export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinu
               className="scroll-mt-32 md:scroll-mt-36"
             >
               <header
-                className={`mb-2 flex flex-wrap items-baseline justify-between gap-x-2 rounded-xl px-3 py-2 ${
+                className={`mb-3 flex flex-wrap items-baseline justify-between gap-x-2 rounded-xl px-3 py-2 ${
                   isToday ? "bg-primary text-on-primary" : "bg-surface-2"
                 }`}
               >
