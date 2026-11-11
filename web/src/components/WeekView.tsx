@@ -77,7 +77,7 @@ export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinu
             >
               <header
                 className={`mb-3 flex flex-wrap items-baseline justify-between gap-x-2 rounded-xl px-3 py-2 ${
-                  isToday ? "bg-primary text-on-primary" : "bg-surface-2"
+                  isToday ? "border border-transparent bg-primary text-on-primary" : "border border-line bg-surface-2"
                 }`}
               >
                 <h2 className="font-semibold">{WEEKDAYS_FULL[(day.getDay() + 6) % 7]}</h2>
