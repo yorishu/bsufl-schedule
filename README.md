@@ -61,7 +61,9 @@ python scraper/scrape.py
 pip install -r admin/requirements.txt
 python admin/members.py add "Иванов Иван"   # выдаст ID (u02, u03, …) и ключ, передать человеку лично
 python admin/members.py list
-python admin/members.py revoke u03          # отключить доступ
+python admin/members.py reset u03           # новый ключ при том же ID
+python admin/members.py rename u03 "Имя"    # исправить имя
+python admin/members.py revoke u03          # отключить доступ (ID не переиспользуется)
 ```
 
 ## Правила Firestore
