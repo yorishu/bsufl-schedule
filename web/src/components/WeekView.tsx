@@ -73,7 +73,7 @@ export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinu
               key={iso}
               id={`day-${iso}`}
               aria-label={`${WEEKDAYS_FULL[(day.getDay() + 6) % 7]}, ${formatDay(day)}`}
-              className="scroll-mt-32 md:scroll-mt-36"
+              className="scroll-mt-[calc(8rem+env(safe-area-inset-top))] md:scroll-mt-[calc(9rem+env(safe-area-inset-top))]"
             >
               <header
                 className={`mb-3 flex flex-wrap items-baseline justify-between gap-x-2 rounded-xl px-3 py-2 ${

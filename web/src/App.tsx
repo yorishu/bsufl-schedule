@@ -142,7 +142,7 @@ export default function App() {
   return (
     <AppContext.Provider value={ctx}>
       <div className="min-h-dvh">
-        <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
+        <header className="sticky top-0 z-20 pt-[env(safe-area-inset-top)] border-b border-line bg-bg/90 backdrop-blur">
           <div className="mx-auto flex h-14 max-w-7xl 2xl:max-w-[1800px] items-center gap-3 px-4">
             <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary text-on-primary">
               <Icon name="calendar" className="size-4" />
