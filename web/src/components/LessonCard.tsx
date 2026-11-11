@@ -24,17 +24,22 @@ export function LessonCard({ lesson, homework, isNow, parallel }: Props) {
   const [adding, setAdding] = useState(false);
 
   return (
+    // @container: в узких колонках (6 дней на широком экране) время переносится над названием,
+    // в карточках шире 18rem (телефон, 2-3 колонки) раскладка прежняя.
     <article
-      className={`rounded-2xl border bg-surface p-3.5 ${
+      className={`@container min-w-0 rounded-2xl border bg-surface p-3.5 ${
         isNow ? "border-primary ring-2 ring-primary/40" : "border-line"
       }`}
     >
-      <div className="flex gap-3">
-        <div className="w-12 shrink-0 text-center leading-tight">
-          <div className="font-semibold tabular-nums text-primary-text">{lesson.start}</div>
-          <div className="text-sm tabular-nums text-muted">{lesson.end}</div>
+      <div className="flex flex-col gap-1.5 @[18rem]:flex-row @[18rem]:gap-3">
+        <div className="flex shrink-0 items-baseline gap-1 leading-tight @[18rem]:block @[18rem]:w-12 @[18rem]:text-center">
+          <span className="font-semibold tabular-nums text-primary-text @[18rem]:block">{lesson.start}</span>
+          <span className="text-muted @[18rem]:hidden" aria-hidden="true">
+            –
+          </span>
+          <span className="text-sm tabular-nums text-muted @[18rem]:block">{lesson.end}</span>
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 break-words">
           {isNow && (
             <span className="mb-1 inline-block rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-on-primary">
               Идёт сейчас

@@ -65,7 +65,7 @@ export function WeekView({ weekStart, lessonsByDate, homework, todayISO, nowMinu
               className="scroll-mt-32 md:scroll-mt-36"
             >
               <header
-                className={`mb-2 flex items-baseline justify-between rounded-xl px-3 py-2 ${
+                className={`mb-2 flex flex-wrap items-baseline justify-between gap-x-2 rounded-xl px-3 py-2 ${
                   isToday ? "bg-primary text-on-primary" : "bg-surface-2"
                 }`}
               >

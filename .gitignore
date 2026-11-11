@@ -1,6 +1,7 @@
 # Секреты: никогда не коммитить
 admin/serviceAccount.local.json
 admin/keys.local.csv
+users.md
 *.local.json
 *.local.csv
 .env
