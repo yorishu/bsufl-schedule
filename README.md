@@ -90,7 +90,3 @@ firebase deploy --only firestore:rules
 обновления расписания. Для сборки в **Settings → Secrets and variables → Actions** нужны секреты:
 `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`.
 В **Settings → Pages** источник: **GitHub Actions**.
-
-## Секреты, которые нельзя коммитить
-
-`admin/serviceAccount.local.json`, `admin/keys.local.csv`, `web/.env.local` (все в `.gitignore`).
